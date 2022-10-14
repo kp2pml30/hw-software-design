@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 
 /**
@@ -35,42 +36,48 @@ public class QueryServlet extends HttpServlet {
 
     private void handleMax(HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT NAME, PRICE AS NUM FROM PRODUCT ORDER BY PRICE DESC LIMIT 1", true);
+        final PrintWriter w = response.getWriter();
 
-        response.getWriter().println("<html><body>");
-        response.getWriter().println("<h1>Product with max price: </h1>");
+        w.println("<html><body>");
+        w.println("<h1>Product with max price: </h1>");
         if (ni != null) {
-            response.getWriter().println(ni.name + "\t" + ni.num + "</br>");
+            w.println(ni.name + "\t" + ni.num + "</br>");
         }
-        response.getWriter().println("</body></html>");
+        w.println("</body></html>");
     }
 
     private void handleMin(HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT NAME, PRICE AS NUM FROM PRODUCT ORDER BY PRICE LIMIT 1", true);
+        final PrintWriter w = response.getWriter();
 
-        response.getWriter().println("<html><body>");
-        response.getWriter().println("<h1>Product with min price: </h1>");
+        w.println("<html><body>");
+        w.println("<h1>Product with min price: </h1>");
         if (ni != null) {
-            response.getWriter().println(ni.name + "\t" + ni.num + "</br>");
+            w.println(ni.name + "\t" + ni.num + "</br>");
         }
-        response.getWriter().println("</body></html>");
+        w.println("</body></html>");
     }
 
     private void handleSum(HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT SUM(price) AS NUM FROM PRODUCT", false);
         assert ni != null;
-        response.getWriter().println("<html><body>");
-        response.getWriter().println("Summary price: ");
-        response.getWriter().println(ni.num);
-        response.getWriter().println("</body></html>");
+        final PrintWriter w = response.getWriter();
+
+        w.println("<html><body>");
+        w.println("Summary price: ");
+        w.println(ni.num);
+        w.println("</body></html>");
     }
 
     private void handleCount(HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT COUNT(*) AS NUM FROM PRODUCT", false);
         assert ni != null;
-        response.getWriter().println("<html><body>");
-        response.getWriter().println("Number of products: ");
-        response.getWriter().println(ni.num);
-        response.getWriter().println("</body></html>");
+        final PrintWriter w = response.getWriter();
+
+        w.println("<html><body>");
+        w.println("Number of products: ");
+        w.println(ni.num);
+        w.println("</body></html>");
     }
 
     @Override
