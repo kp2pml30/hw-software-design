@@ -31,7 +31,7 @@ public class QueryServlet extends HttpServlet {
         });
     }
 
-    private void handleMax(HttpServletResponse response) throws IOException, SQLException {
+    private void handleMax(final HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT NAME, PRICE AS NUM FROM PRODUCT ORDER BY PRICE DESC LIMIT 1", true);
         final PrintWriter w = response.getWriter();
 
@@ -43,7 +43,7 @@ public class QueryServlet extends HttpServlet {
         w.println("</body></html>");
     }
 
-    private void handleMin(HttpServletResponse response) throws IOException, SQLException {
+    private void handleMin(final HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT NAME, PRICE AS NUM FROM PRODUCT ORDER BY PRICE LIMIT 1", true);
         final PrintWriter w = response.getWriter();
 
@@ -55,7 +55,7 @@ public class QueryServlet extends HttpServlet {
         w.println("</body></html>");
     }
 
-    private void handleSum(HttpServletResponse response) throws IOException, SQLException {
+    private void handleSum(final HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT SUM(price) AS NUM FROM PRODUCT", false);
         assert ni != null;
         final PrintWriter w = response.getWriter();
@@ -66,7 +66,7 @@ public class QueryServlet extends HttpServlet {
         w.println("</body></html>");
     }
 
-    private void handleCount(HttpServletResponse response) throws IOException, SQLException {
+    private void handleCount(final HttpServletResponse response) throws IOException, SQLException {
         final NameInt ni = performSingleIntQuery("SELECT COUNT(*) AS NUM FROM PRODUCT", false);
         assert ni != null;
         final PrintWriter w = response.getWriter();
@@ -78,8 +78,8 @@ public class QueryServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String command = request.getParameter("command");
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        final String command = request.getParameter("command");
 
         try {
             if ("max".equals(command)) {

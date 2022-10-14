@@ -15,13 +15,13 @@ import java.sql.Statement;
 public class AddProductServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String name = request.getParameter("name");
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        final String name = request.getParameter("name");
         long price = Long.parseLong(request.getParameter("price"));
 
-        try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
-            try (Statement stmt = c.createStatement()) {
-                String sql = "INSERT INTO PRODUCT " +
+        try (final Connection c = DriverManager.getConnection(Defs.dbAddress)) {
+            try (final Statement stmt = c.createStatement()) {
+                final String sql = "INSERT INTO PRODUCT " +
                         "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
                 stmt.executeUpdate(sql);
             }

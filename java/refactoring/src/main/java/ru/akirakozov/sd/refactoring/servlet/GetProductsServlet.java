@@ -13,7 +13,7 @@ import java.sql.*;
 public class GetProductsServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         final PrintWriter w = response.getWriter();
 
         w.println("<html><body>");
