@@ -45,7 +45,7 @@ class GetProductsServletTest {
         int count;
     }
 
-    static int getParam(final QueryServlet queryServlet, final String command) throws IOException {
+    static int getParam(final QueryServlet queryServlet, final String command, final int dflt) throws IOException {
         final StringWriter out = new StringWriter();
         final HttpServletResponse resp = getMockResponse(out);
 
@@ -55,16 +55,18 @@ class GetProductsServletTest {
         final String res = out.toString();
         final Pattern p = Pattern.compile("\\b[0-9]+\\b");
         final Matcher ans = p.matcher(res);
-        assertTrue(ans.find());
+        if (!ans.find()) {
+            return dflt;
+        }
         return Integer.parseInt(ans.group(0));
     }
 
     static Params getParams(final QueryServlet queryServlet) throws IOException {
         final Params ret = new Params();
-        ret.min = getParam(queryServlet, "min");
-        ret.max = getParam(queryServlet, "max");
-        ret.sum = getParam(queryServlet, "sum");
-        ret.count = getParam(queryServlet, "count");
+        ret.min = getParam(queryServlet, "min", Integer.MAX_VALUE);
+        ret.max = getParam(queryServlet, "max", Integer.MIN_VALUE);
+        ret.sum = getParam(queryServlet, "sum", 0);
+        ret.count = getParam(queryServlet, "count", 0);
         return ret;
     }
 

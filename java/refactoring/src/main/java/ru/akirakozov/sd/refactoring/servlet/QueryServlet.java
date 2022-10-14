@@ -10,76 +10,67 @@ import java.sql.*;
  * @author akirakozov
  */
 public class QueryServlet extends HttpServlet {
-    private void handleMax(HttpServletResponse response) throws IOException, SQLException {
-        try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
-            Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1");
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("<h1>Product with max price: </h1>");
+    private static class NameInt {
+        String name;
+        int num;
+    }
 
-            while (rs.next()) {
-                String name = rs.getString("name");
-                int price = rs.getInt("price");
-                response.getWriter().println(name + "\t" + price + "</br>");
+    private NameInt performSingleIntQuery(final String query, final boolean hasName) throws SQLException {
+        try (final Connection c = DriverManager.getConnection(Defs.dbAddress)) {
+            try (final Statement stmt = c.createStatement()) {
+                final ResultSet rs = stmt.executeQuery(query);
+                if (!rs.next()) {
+                    return null;
+                }
+                final NameInt ret = new NameInt();
+                if (hasName) {
+                    ret.name = rs.getString("name");
+                }
+                ret.num = rs.getInt("num");
+                assert !rs.next();
+                return ret;
             }
-            response.getWriter().println("</body></html>");
-
-            rs.close();
-            stmt.close();
         }
+    }
+
+    private void handleMax(HttpServletResponse response) throws IOException, SQLException {
+        final NameInt ni = performSingleIntQuery("SELECT NAME, PRICE AS NUM FROM PRODUCT ORDER BY PRICE DESC LIMIT 1", true);
+
+        response.getWriter().println("<html><body>");
+        response.getWriter().println("<h1>Product with max price: </h1>");
+        if (ni != null) {
+            response.getWriter().println(ni.name + "\t" + ni.num + "</br>");
+        }
+        response.getWriter().println("</body></html>");
     }
 
     private void handleMin(HttpServletResponse response) throws IOException, SQLException {
-        try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
-            Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1");
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("<h1>Product with min price: </h1>");
+        final NameInt ni = performSingleIntQuery("SELECT NAME, PRICE AS NUM FROM PRODUCT ORDER BY PRICE LIMIT 1", true);
 
-            while (rs.next()) {
-                String name = rs.getString("name");
-                int price = rs.getInt("price");
-                response.getWriter().println(name + "\t" + price + "</br>");
-            }
-            response.getWriter().println("</body></html>");
-
-            rs.close();
-            stmt.close();
+        response.getWriter().println("<html><body>");
+        response.getWriter().println("<h1>Product with min price: </h1>");
+        if (ni != null) {
+            response.getWriter().println(ni.name + "\t" + ni.num + "</br>");
         }
+        response.getWriter().println("</body></html>");
     }
 
     private void handleSum(HttpServletResponse response) throws IOException, SQLException {
-        try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
-            Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT SUM(price) FROM PRODUCT");
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("Summary price: ");
-
-            if (rs.next()) {
-                response.getWriter().println(rs.getInt(1));
-            }
-            response.getWriter().println("</body></html>");
-
-            rs.close();
-            stmt.close();
-        }
+        final NameInt ni = performSingleIntQuery("SELECT SUM(price) AS NUM FROM PRODUCT", false);
+        assert ni != null;
+        response.getWriter().println("<html><body>");
+        response.getWriter().println("Summary price: ");
+        response.getWriter().println(ni.num);
+        response.getWriter().println("</body></html>");
     }
 
     private void handleCount(HttpServletResponse response) throws IOException, SQLException {
-        try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
-            Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM PRODUCT");
-            response.getWriter().println("<html><body>");
-            response.getWriter().println("Number of products: ");
-
-            if (rs.next()) {
-                response.getWriter().println(rs.getInt(1));
-            }
-            response.getWriter().println("</body></html>");
-
-            rs.close();
-            stmt.close();
-        }
+        final NameInt ni = performSingleIntQuery("SELECT COUNT(*) AS NUM FROM PRODUCT", false);
+        assert ni != null;
+        response.getWriter().println("<html><body>");
+        response.getWriter().println("Number of products: ");
+        response.getWriter().println(ni.num);
+        response.getWriter().println("</body></html>");
     }
 
     @Override
