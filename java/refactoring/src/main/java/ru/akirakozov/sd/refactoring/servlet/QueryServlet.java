@@ -12,8 +12,13 @@ import java.sql.*;
  */
 public class QueryServlet extends HttpServlet {
     private static class NameInt {
-        String name;
-        int num;
+        final String name;
+        final int num;
+
+        NameInt(final String name, final int num) {
+            this.name = name;
+            this.num = num;
+        }
     }
 
     private NameInt performSingleIntQuery(final String query, final boolean hasName) throws SQLException {
@@ -21,11 +26,12 @@ public class QueryServlet extends HttpServlet {
             if (!rs.next()) {
                 return null;
             }
-            final NameInt ret = new NameInt();
+            final NameInt ret;
             if (hasName) {
-                ret.name = rs.getString("name");
+                ret = new NameInt(rs.getString("name"), rs.getInt("num"));
+            } else {
+                ret = new NameInt(null, rs.getInt("num"));
             }
-            ret.num = rs.getInt("num");
             assert !rs.next();
             return ret;
         });
