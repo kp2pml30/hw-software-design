@@ -88,16 +88,21 @@ public class QueryServlet extends HttpServlet {
         final String command = request.getParameter("command");
 
         try {
-            if ("max".equals(command)) {
-                handleMax(response);
-            } else if ("min".equals(command)) {
-                handleMin(response);
-            } else if ("sum".equals(command)) {
-                handleSum(response);
-            } else if ("count".equals(command)) {
-                handleCount(response);
-            } else {
-                response.getWriter().println("Unknown command: " + command);
+            switch (command) {
+                case "max":
+                    handleMax(response);
+                    break;
+                case "min":
+                    handleMin(response);
+                    break;
+                case "sum":
+                    handleSum(response);
+                    break;
+                case "count":
+                    handleCount(response);
+                    break;
+                default:
+                    response.getWriter().println("Unknown command: " + command);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
