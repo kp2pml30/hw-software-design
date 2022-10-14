@@ -17,21 +17,18 @@ public class QueryServlet extends HttpServlet {
     }
 
     private NameInt performSingleIntQuery(final String query, final boolean hasName) throws SQLException {
-        try (final Connection c = DriverManager.getConnection(Defs.dbAddress)) {
-            try (final Statement stmt = c.createStatement()) {
-                final ResultSet rs = stmt.executeQuery(query);
-                if (!rs.next()) {
-                    return null;
-                }
-                final NameInt ret = new NameInt();
-                if (hasName) {
-                    ret.name = rs.getString("name");
-                }
-                ret.num = rs.getInt("num");
-                assert !rs.next();
-                return ret;
+        return Defs.querySql(query, (rs) -> {
+            if (!rs.next()) {
+                return null;
             }
-        }
+            final NameInt ret = new NameInt();
+            if (hasName) {
+                ret.name = rs.getString("name");
+            }
+            ret.num = rs.getInt("num");
+            assert !rs.next();
+            return ret;
+        });
     }
 
     private void handleMax(HttpServletResponse response) throws IOException, SQLException {

@@ -19,13 +19,11 @@ public class AddProductServlet extends HttpServlet {
         String name = request.getParameter("name");
         long price = Long.parseLong(request.getParameter("price"));
 
-        try {
-            try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
+        try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
+            try (Statement stmt = c.createStatement()) {
                 String sql = "INSERT INTO PRODUCT " +
                         "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
-                Statement stmt = c.createStatement();
                 stmt.executeUpdate(sql);
-                stmt.close();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
