@@ -41,7 +41,7 @@ public class QueryServlet extends HttpServlet {
             }
         } else if ("min".equals(command)) {
             try {
-                try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
+                try (Connection c = DriverManager.getConnection(Defs.dbAddress)) {
                     Statement stmt = c.createStatement();
                     ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1");
                     response.getWriter().println("<html><body>");
