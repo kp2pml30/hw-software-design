@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -26,7 +27,7 @@ public class AddProductServlet extends HttpServlet {
                 stmt.executeUpdate(sql);
                 stmt.close();
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
