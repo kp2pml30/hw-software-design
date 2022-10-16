@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.akirakozov.sd.mvc.dao.ProductDao;
-import ru.akirakozov.sd.mvc.logic.DataFilter;
-import ru.akirakozov.sd.mvc.model.Filter;
-import ru.akirakozov.sd.mvc.model.Product;
+import ru.akirakozov.sd.mvc.model.TaskList;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,29 +23,35 @@ public class ProductController {
         this.productDao = productDao;
     }
 
-    @RequestMapping(value = "/add-product", method = RequestMethod.POST)
-    public String addQuestion(@ModelAttribute("product") Product product) {
-        productDao.addProduct(product);
+    @RequestMapping(value = "/toggle-done", method = RequestMethod.POST)
+    public String toggleDone(@ModelAttribute("doData") TaskList.DoData doData) {
+        productDao.toggleDone(doData);
+        return "redirect:/get-products";
+    }
+
+    @RequestMapping(value = "/add-task-list", method = RequestMethod.POST)
+    public String addQuestion(@ModelAttribute("listData") TaskList.Data listData) {
+        assert listData.name != null;
+        productDao.addTaskList(listData);
+        return "redirect:/get-products";
+    }
+
+    @RequestMapping(value = "/add-task", method = RequestMethod.POST)
+    public String addQuestion(@ModelAttribute("taskData") TaskList.TaskData taskData) {
+        productDao.addTask(taskData);
         return "redirect:/get-products";
     }
 
     @RequestMapping(value = "/get-products", method = RequestMethod.GET)
     public String getProducts(ModelMap map) {
-        prepareModelMap(map, productDao.getProducts());
+        prepareModelMap(map, productDao.getTaskLists());
         return "index";
     }
 
-    @RequestMapping(value = "/filter-products", method = RequestMethod.GET)
-    public String getProducts(@RequestParam String filter, ModelMap map) {
-        Optional<DataFilter> dataFilter = DataFilter.getFilterByName(filter);
-        dataFilter.ifPresent(value -> prepareModelMap(map, value.filter(productDao)));
-
-        return "index";
-    }
-
-    private void prepareModelMap(ModelMap map, List<Product> products) {
-        map.addAttribute("products", products);
-        map.addAttribute("product", new Product());
-        map.addAttribute("filter", new Filter());
+    private void prepareModelMap(ModelMap map, List<TaskList> taskLists) {
+        map.addAttribute("taskLists", taskLists);
+        map.addAttribute("listData", new TaskList.Data());
+        map.addAttribute("taskData", new TaskList.TaskData());
+        map.addAttribute("doData", new TaskList.DoData());
     }
 }
