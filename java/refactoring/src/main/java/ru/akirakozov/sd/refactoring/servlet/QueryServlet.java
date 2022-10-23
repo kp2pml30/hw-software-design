@@ -22,7 +22,7 @@ public class QueryServlet extends HttpServlet {
     }
 
     private NameInt performSingleIntQuery(final String query, final boolean hasName) throws SQLException {
-        return Defs.querySql(query, (rs) -> {
+        return Database.querySql(query, (rs) -> {
             if (!rs.next()) {
                 return null;
             }

@@ -3,6 +3,7 @@ package ru.akirakozov.sd.refactoring.servlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,13 +20,14 @@ public class AddProductServlet extends HttpServlet {
         final String name = request.getParameter("name");
         long price = Long.parseLong(request.getParameter("price"));
 
-        try (final Connection c = DriverManager.getConnection(Defs.dbAddress)) {
-            try (final Statement stmt = c.createStatement()) {
+        try {
+            Database.withStatement((stmt) -> {
                 final String sql = "INSERT INTO PRODUCT " +
                         "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
                 stmt.executeUpdate(sql);
-            }
-        } catch (SQLException e) {
+                return null;
+            });
+        } catch (final SQLException e) {
             throw new RuntimeException(e);
         }
 

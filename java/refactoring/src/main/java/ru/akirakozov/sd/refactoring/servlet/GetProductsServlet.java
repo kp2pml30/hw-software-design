@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
 
 /**
  * @author akirakozov
@@ -17,7 +16,7 @@ public class GetProductsServlet extends HttpServlet {
         final PrintWriter w = response.getWriter();
 
         w.println("<html><body>");
-        Defs.querySqlUnchecked("SELECT * FROM PRODUCT", (rs) -> {
+        Database.querySqlUnchecked("SELECT * FROM PRODUCT", (rs) -> {
             while (rs.next()) {
                 String name = rs.getString("name");
                 int price = rs.getInt("price");
