@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -73,6 +74,7 @@ class GetProductsServletTest {
     @org.junit.jupiter.api.Test
     void addAndQuery() throws Exception {
         final QueryServlet queryServlet = new QueryServlet();
+        final Random rnd = new Random();
 
         for (int i = 0; i < 3; i++) {
             final Params initial = getParams(queryServlet);
@@ -82,7 +84,7 @@ class GetProductsServletTest {
             final Clock clock = Clock.systemDefaultZone();
             final Instant instant = clock.instant();
             final String name = "test_" + i + "_" + instant.getNano();
-            final int price = 30;
+            final int price = rnd.nextInt(100);
             when(req.getParameter("name")).thenReturn(name);
             when(req.getParameter("price")).thenReturn(Integer.toString(price));
             final HttpServletResponse resp = mock(HttpServletResponse.class);
@@ -95,6 +97,12 @@ class GetProductsServletTest {
             assertEquals(Integer.max(price, initial.max), end.max);
             assertEquals(Integer.min(price, initial.min), end.min);
             assertEquals(initial.sum + price, end.sum);
+
+            Database.withStatement((stmt) -> {
+                final String sql = "DELETE FROM PRODUCT WHERE name LIKE 'test_%'";
+                stmt.executeUpdate(sql);
+                return null;
+            });
         }
     }
 }
