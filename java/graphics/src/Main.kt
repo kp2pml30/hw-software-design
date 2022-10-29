@@ -8,11 +8,6 @@ object Main {
         exitProcess(1)
     }
 
-    private const val USE_VEC = 0
-    private const val USE_MAT = 1
-    private const val USE_AWT = 0
-    private const val USE_JFX = 1
-
     @JvmStatic
     fun main(args: Array<String>) {
         if (args.size != 2) {
