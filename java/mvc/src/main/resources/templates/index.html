@@ -5,36 +5,47 @@
 </head>
 <body>
 
-<h3>Select products</h3>
-<form method="GET" action="/filter-products">
-    <select th:name="filter">
-        <option value="all">all</option>
-        <option value="max">max</option>
-        <option value="min">min</option>
-    </select>
-    <input type="submit" value="filter">
-</form>
+<ul>
+<th:block th:each="lst : ${taskLists}">
+    <li>
+    <table><tr>
+        <td th:text="${lst.getId()}"/>
+        <td th:text="${lst.getName()}"/>
+        <td>
+            <form th:object="${taskData}" method="POST" action="/add-task">
+                <input type="hidden" th:value="${lst.getId()}" th:name="id">
+                <input type="text" th:field="*{description}">
+                <input type="submit" value="add">
+            </form>
+        </td>
+    </tr></table>
+    <ul>
+        <th:block th:each="it : ${lst.getTasks()}">
+            <li>
+                <table><tr>
+                    <td>
+                        <form th:object="${doData}" method="POST" action="/toggle-done">
+                        <input type="hidden" th:value="${lst.getId()}" th:name="lstId">
+                        <input type="hidden" th:value="${it.id}" th:name="itId">
+                        <input type="checkbox" th:checked="${it.done}" th:name="done"
+                            onclick="this.form.submit()"/>
+                        </form>
+                    </td>
+                    <td th:text="${it.description}"/>
+                </tr></table>
+            </li>
+        </th:block>
+    </ul>
+    </li>
+</th:block>
+</ul>
 
-<table>
-    <th:block th:each="product : ${products}">
-    <tr>
-        <td th:text="${product.getId()}"/>
-        <td th:text="${product.getName()}"/>
-        <td th:text="${product.getPrice()}"/>
-    </tr>
-    </th:block>
-</table>
-
-<h3>Add new products</h3>
-<form th:object="${product}" method="POST" action="/add-product">
+<h3>Add new task list</h3>
+<form th:object="${listData}" method="POST" action="/add-task-list">
     <table>
         <tr>
             <td><label>Name:</label></td>
             <td><input type="text" th:field="*{name}"/></td>
-        </tr>
-        <tr>
-            <td><label>Price:</label></td>
-            <td><input type="text" th:field="*{price}"/></td>
         </tr>
     </table>
 

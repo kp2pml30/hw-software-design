@@ -1,9 +1,9 @@
 package ru.akirakozov.sd.mvc.dao;
 
-import ru.akirakozov.sd.mvc.model.Product;
+import ru.akirakozov.sd.mvc.model.TaskList;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -12,24 +12,28 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ProductInMemoryDao implements ProductDao {
     private final AtomicInteger lastId = new AtomicInteger(0);
-    private final List<Product> products = new CopyOnWriteArrayList<>();
+    private final List<TaskList> taskLists = new CopyOnWriteArrayList<>();
 
-    public int addProduct(Product product) {
-        int id = lastId.incrementAndGet();
-        product.setId(id);
-        products.add(product);
+    @Override
+    public int addTaskList(final TaskList.Data taskList) {
+        int id = lastId.getAndIncrement();
+        taskLists.add(new TaskList(id, taskList.name));
         return id;
     }
 
-    public List<Product> getProducts() {
-        return List.copyOf(products);
+    @Override
+    public List<TaskList> getTaskLists() {
+        return List.copyOf(taskLists);
     }
 
-    public Optional<Product> getProductWithMaxPrice() {
-        return products.stream().max(Product.PRICE_COMPARATOR);
+    @Override
+    public int addTask(TaskList.TaskData taskData) {
+        final TaskList.Task ret = taskLists.get(taskData.id).addTask(taskData.description);
+        return ret.id;
     }
 
-    public Optional<Product> getProductWithMinPrice() {
-        return products.stream().min(Product.PRICE_COMPARATOR);
+    @Override
+    public void toggleDone(TaskList.DoData doData) {
+        taskLists.get(doData.lstId).toggleDone(doData.itId, doData.done);
     }
 }
